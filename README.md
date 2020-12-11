@@ -1,6 +1,8 @@
 # piRing
 Application for Raspberry Pi + LED strip applications
 
+Living overview: https://docs.google.com/presentation/d/1itTJBrKQfjFh-qhHS5WvnWadk3RZ_CQhC9VJpBmFdOQ/edit?usp=sharing
+
 **./app/clock.py**
 * Main program for LED and clock control
 * Uses RPI system time for clock time
