@@ -1,0 +1,5 @@
+hostapd
+dnsmasq
+ethtool
+git
+nodogsplash
