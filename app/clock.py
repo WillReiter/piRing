@@ -3,10 +3,18 @@
 from rpi_ws281x import PixelStrip, Color
 import sys, os, time, datetime
 
-#class piClock(PixelStrip):
+#class PixelRing(PixelStrip):
 #        def __init__(self, num, pin, freq_hz=800000, dma=10, invert=False,
-#            brightness=255, channel=0, strip_type=None, gamma=None)
+#            brightness=255, channel=0, strip_type=None, gamma=None, rotation=None)
 #            super.()
+#    
+#    
+#    override? the follwoing to inlcude rotation:
+#    def setPixelColor(self, n, color):
+#    def setPixelColorRGB(self, n, red, green, blue, white=0):
+#    def getPixelColor(self, n):
+#    def getPixelColorRGB(self, n):
+#
 
 def colorWipe(strip, color, wait_ms=100):
     """Wipe color across display a pixel at a time."""
