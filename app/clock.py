@@ -6,7 +6,6 @@ from datetime import datetime
 
 
 #Global Attributes to be used across script. Initialized to 0
-#add color constants here
 WHITE = Color(127, 127, 127)
 RED = Color(255, 0, 0)
 ORANGE = Color(255, 69, 0)
@@ -49,6 +48,10 @@ def colorWipe(strip, color, wait_ms=100):
         strip.show()
         time.sleep(wait_ms / 1000.0)
 
+ def startup_animation():
+    colorWipe(strip, WHITE, 10)
+    colorWipe(strip, BLACK, 10)
+
 def read_settings():
     #import settings from YAML file
     #return session settings
@@ -58,28 +61,31 @@ def drawClock(strip, time, COLOR_0, COLOR_1, COLOR_2, COLOR_3):
     
     #clear display first
     for i in range(60):
-                strip.setPixelColor(i, Color(0, 0, 0))
+                strip.setPixelColor(i, BLACK)
 
-    #update time: 
+    #update minute fill: 
     for j in range(time.minute+1):
         strip.setPixelColor(j, COLOR_1)
+    
+    #update hour ticks
     for k in range(0, 60, 5):
-        strip.setPixelColor(k, COLOR_3)
+        strip.setPixelColor(k, COLOR_2)
 
+    #update current hour
+    hour = time.hour % 12
+    hour_pixel = hour * 5
+
+    if hour_pixel - 1 < 0:  
+        strip.setPixelColor(hour_pixel + 59, COLOR_3)
+    else:
+        strip.setPixelColor(hour_pixel - 1, COLOR_3)
+
+    strip.setPixelColor(hour_pixel, COLOR_3)
+    strip.setPixelColor(hour_pixel + 1, COLOR_3)
+
+    #update second
     strip.setPixelColor(time.second, COLOR_0)
-    
 
-    # do clock things here
-    
-    #draw static hours with color_0
-
-    #draw second with color_1
-
-    #draw minutes with COLOR_2
-    
-    #draw hours with COLOR_3
-
-    # show
     return 0
 
 def static(params):
@@ -106,10 +112,10 @@ def main():
     ROTATION = 52
 
     #replace with file i/o
-    COLOR_0 = Color(127, 127, 127) #WHITE
-    COLOR_1 = Color(255, 0, 0)      #GRN
-    COLOR_2 = Color(0, 255, 0)      #RED
-    COLOR_3 = Color(0, 0, 255)      #BLUE
+    COLOR_0 = WHITE                 #seconds
+    COLOR_1 = GOLD                  #minute fill
+    COLOR_2 = LIGHT_BLUE            #hour ticks
+    COLOR_3 = BLUE                  #current hour
 
     #params = read_settings()
 
@@ -117,15 +123,8 @@ def main():
 
     strip.begin()
 
-    colorWipe(strip, COLOR_1, 10)
-        
-    #colorWipe(strip, red, 50)
-
-    #colorWipe(strip, blue, 50)
-
-    #colorWipe(strip, green, 50)
-
-    colorWipe(strip, Color(0, 0, 0), 10)
+    #initial animation here:
+    startup_animation()
 
     if True:
         while True:
@@ -136,7 +135,7 @@ def main():
                 current_time = now.strftime("%H:%M:%S")
                 print("Time: ", current_time)    
 
-            drawClock(strip, now, GOLD, LIGHT_BLUE, PINK, COLOR_3)
+            drawClock(strip, now, COLOR_0, COLOR_1, COLOR_2, COLOR_3)
             strip.show()
             #drawClock(strip, time, COLOR_0, COLOR_1, COLOR_2, COLOR_3)
             #if hour change     
