@@ -7,20 +7,40 @@ from datetime import datetime
 
 #Global Attributes to be used across script. Initialized to 0
 #add color constants here
+WHITE = Color(127, 127, 127)
+RED = Color(255, 0, 0)
+ORANGE = Color(255, 69, 0)
+GOLD = Color(255, 215, 0)
+GREEN = Color(0, 255, 0)
+BLUE = Color(0, 0, 255)
+LIGHT_BLUE = Color(0, 191, 255)
+INDIGO = Color(75, 0, 130)
+VOILET = Color(238, 130, 238)
+PINK = Color(255, 20, 147)
+BLACK =  Color(0, 0, 0)
+
+#ALL_COLORS = 
 
 class PixelRing(PixelStrip):
 
-    def __init__(self, num, pin, freq_hz=800000, dma=10, invert=False, brightness=255, channel=0, strip_type=None, gamma=None, rotation=None):
+    def __init__(self, num, pin, freq_hz=800000, dma=10, invert=False, brightness=255, channel=0, strip_type=None, gamma=None, rotation=0):
         super().__init__(num, pin, freq_hz, dma, invert, brightness, channel, strip_type, gamma)
+        
         self.rotation = rotation
-#    
-#    
-#    override? the follwoing to inlcude rotation:
-#    def setPixelColor(self, n, color):
-#    def setPixelColorRGB(self, n, red, green, blue, white=0):
-#    def getPixelColor(self, n):
-#    def getPixelColorRGB(self, n):
-#
+    
+    # override the follwoing to inlcude rotation:
+    def setPixelColor(self, n, color):
+        """Set LED at position n to the provided 24-bit color value (in RGB order).
+        """
+
+        n = (n + self.rotation) % int(self.numPixels())
+
+        self._led_data[n] = color
+    #   other methods that will need an override to include rotation, if used
+    #    def setPixelColorRGB(self, n, red, green, blue, white=0):
+    #    def getPixelColor(self, n):
+    #    def getPixelColorRGB(self, n):
+
 
 def colorWipe(strip, color, wait_ms=100):
     """Wipe color across display a pixel at a time."""
@@ -58,7 +78,7 @@ def drawClock(strip, time, COLOR_0, COLOR_1, COLOR_2, COLOR_3):
     #draw minutes with COLOR_2
     
     #draw hours with COLOR_3
-    #
+
     # show
     return 0
 
@@ -83,7 +103,7 @@ def main():
     LED_BRIGHTNESS = 200  # Set to 0 for darkest and 255 for brightest
     LED_INVERT = False    # True to invert the signal (when using NPN transistor level shift)
     LED_CHANNEL = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
-    ROTATION = 0
+    ROTATION = 52
 
     #replace with file i/o
     COLOR_0 = Color(127, 127, 127) #WHITE
@@ -93,11 +113,11 @@ def main():
 
     #params = read_settings()
 
-    strip = PixelRing(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL, ROTATION)
+    strip = PixelRing(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL, rotation=ROTATION)
 
     strip.begin()
 
-    colorWipe(strip, COLOR_0, 10)
+    colorWipe(strip, COLOR_1, 10)
         
     #colorWipe(strip, red, 50)
 
@@ -116,7 +136,7 @@ def main():
                 current_time = now.strftime("%H:%M:%S")
                 print("Time: ", current_time)    
 
-            drawClock(strip, now, COLOR_0, COLOR_1, COLOR_2, COLOR_3)
+            drawClock(strip, now, GOLD, LIGHT_BLUE, PINK, COLOR_3)
             strip.show()
             #drawClock(strip, time, COLOR_0, COLOR_1, COLOR_2, COLOR_3)
             #if hour change     
