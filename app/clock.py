@@ -48,7 +48,7 @@ def colorWipe(strip, color, wait_ms=100):
         strip.show()
         time.sleep(wait_ms / 1000.0)
 
- def startup_animation():
+def startup_animation(strip):
     colorWipe(strip, WHITE, 10)
     colorWipe(strip, BLACK, 10)
 
@@ -124,7 +124,7 @@ def main():
     strip.begin()
 
     #initial animation here:
-    startup_animation()
+    startup_animation(strip)
 
     if True:
         while True:
