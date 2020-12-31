@@ -8,10 +8,11 @@ from datetime import datetime
 #Global Attributes to be used across script. Initialized to 0
 #add color constants here
 
-#class PixelRing(PixelStrip):
-#        def __init__(self, num, pin, freq_hz=800000, dma=10, invert=False,
-#            brightness=255, channel=0, strip_type=None, gamma=None, rotation=None)
-#            super.()
+class PixelRing(PixelStrip):
+
+    def __init__(self, num, pin, freq_hz=800000, dma=10, invert=False, brightness=255, channel=0, strip_type=None, gamma=None, rotation=None):
+        super().__init__(num, pin, freq_hz, dma, invert, brightness, channel, strip_type, gamma)
+        self.rotation = rotation
 #    
 #    
 #    override? the follwoing to inlcude rotation:
@@ -71,6 +72,9 @@ def main():
     
     DEBUG = False
 
+    if DEBUG:
+        print(help(PixelStrip))
+    
     # Default LED strip configuration:
     LED_COUNT = 60        # Number of LED pixels.
     LED_PIN = 18          # GPIO pin connected to the pixels (18 uses PWM!).
@@ -79,6 +83,7 @@ def main():
     LED_BRIGHTNESS = 200  # Set to 0 for darkest and 255 for brightest
     LED_INVERT = False    # True to invert the signal (when using NPN transistor level shift)
     LED_CHANNEL = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
+    ROTATION = 0
 
     #replace with file i/o
     COLOR_0 = Color(127, 127, 127) #WHITE
@@ -88,7 +93,7 @@ def main():
 
     #params = read_settings()
 
-    strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
+    strip = PixelRing(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL, ROTATION)
 
     strip.begin()
 
