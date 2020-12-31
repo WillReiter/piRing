@@ -52,7 +52,6 @@ def colorWipe(strip, color, wait_ms=100, reversed=False, start=None, stop=None):
     # Wipe color across display a pixel at a time
     if not reversed:
         for i, j in enumerate(range(start,stop)):
-            print(i, j)
             strip.setPixelColor(j, color)
             strip.show()
             time.sleep(wait_ms / 1000.0)
@@ -60,13 +59,11 @@ def colorWipe(strip, color, wait_ms=100, reversed=False, start=None, stop=None):
         for i, j in enumerate(range(start,stop)):
             strip.setPixelColor(stop-i, color)
             strip.show()
-            time.sleep(wait_ms / 1000.0)
+            time.sleep(wait_ms/1000.0)
 
-def startup_animation(strip):
-    colorWipe(strip, WHITE, 10, start=15, stop=45)
-    time.sleep(5)
-    print("fellpo")
-    colorWipe(strip, BLACK, 10, reversed=True, start=15, stop=45)
+def startup_animation(strip, time):
+    colorWipe(strip, WHITE, 10)
+    colorWipe(strip, BLACK, 10, reversed=True, start=time.minute)
 
 
 def read_settings():
@@ -140,8 +137,10 @@ def main():
 
     strip.begin()
 
+    now = datetime.now()
+
     #initial animation here:
-    startup_animation(strip)
+    startup_animation(strip, now)
 
     if True:
         while True:
