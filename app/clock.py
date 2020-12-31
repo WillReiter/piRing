@@ -26,7 +26,7 @@ class PixelRing(PixelStrip):
         super().__init__(num, pin, freq_hz, dma, invert, brightness, channel, strip_type, gamma)
         
         self.rotation = rotation
-    
+
     # override the follwoing to inlcude rotation:
     def setPixelColor(self, n, color):
         """Set LED at position n to the provided 24-bit color value (in RGB order).
@@ -61,15 +61,39 @@ def colorWipe(strip, color, wait_ms=100, reversed=False, start=None, stop=None):
             strip.show()
             time.sleep(wait_ms/1000.0)
 
-def startup_animation(strip, time):
-    colorWipe(strip, WHITE, 10)
-    colorWipe(strip, BLACK, 10, reversed=True, start=time.minute)
+def startup_animation(strip, now, wait_ms, min_Color, hourTick_Color):
+    colorWipe(strip, min_Color, wait_ms)
+    #colorWipe(strip, BLACK, 10, reversed=True, start=time.minute)
+    #colorFill(strip, BLACK, start=0, stop=30)
+
+    for i, j in enumerate(range(now.minute, strip.numPixels())):
+        #print(i,j)
+        colorFill(strip, BLACK)
+        drawHourTick(strip, hourTick_Color)
+        colorFill(strip, min_Color, start=0, stop=int(strip.numPixels())-i)
+        strip.show()
+        time.sleep(wait_ms/1000.0)        
 
 
 def read_settings():
     #import settings from YAML file
     #return session settings
     return 1
+
+def drawHourTick(strip, color):
+    #update hour ticks
+    for k in range(0, strip.numPixels(), int(strip.numPixels()/12)):
+        strip.setPixelColor(k, color)
+
+def colorFill(strip, color, start=None, stop=None):
+    if start == None:
+        start = 0
+    if stop == None:
+        stop = strip.numPixels()
+
+    for i in range(start, stop):
+        strip.setPixelColor(i, color)
+
 
 def drawClock(strip, time, COLOR_0, COLOR_1, COLOR_2, COLOR_3):
     
@@ -81,9 +105,7 @@ def drawClock(strip, time, COLOR_0, COLOR_1, COLOR_2, COLOR_3):
     for j in range(time.minute+1):
         strip.setPixelColor(j, COLOR_1)
     
-    #update hour ticks
-    for k in range(0, 60, 5):
-        strip.setPixelColor(k, COLOR_2)
+    drawHourTick(strip, COLOR_2)
 
     #update current hour
     hour = time.hour % 12
@@ -140,7 +162,7 @@ def main():
     now = datetime.now()
 
     #initial animation here:
-    startup_animation(strip, now)
+    startup_animation(strip, now, 10, COLOR_1, COLOR_2)
 
     if True:
         while True:
