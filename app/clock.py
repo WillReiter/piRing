@@ -41,16 +41,33 @@ class PixelRing(PixelStrip):
     #    def getPixelColorRGB(self, n):
 
 
-def colorWipe(strip, color, wait_ms=100):
-    """Wipe color across display a pixel at a time."""
-    for i in range(strip.numPixels()):
-        strip.setPixelColor(i, color)
-        strip.show()
-        time.sleep(wait_ms / 1000.0)
+def colorWipe(strip, color, wait_ms=100, reversed=False, start=None, stop=None):
+    
+    #by default, sweep full strip
+    if start == None:
+        start = 0
+    if stop == None:
+        stop = strip.numPixels()
+
+    # Wipe color across display a pixel at a time
+    if not reversed:
+        for i, j in enumerate(range(start,stop)):
+            print(i, j)
+            strip.setPixelColor(j, color)
+            strip.show()
+            time.sleep(wait_ms / 1000.0)
+    else:
+        for i, j in enumerate(range(start,stop)):
+            strip.setPixelColor(stop-i, color)
+            strip.show()
+            time.sleep(wait_ms / 1000.0)
 
 def startup_animation(strip):
-    colorWipe(strip, WHITE, 10)
-    colorWipe(strip, BLACK, 10)
+    colorWipe(strip, WHITE, 10, start=15, stop=45)
+    time.sleep(5)
+    print("fellpo")
+    colorWipe(strip, BLACK, 10, reversed=True, start=15, stop=45)
+
 
 def read_settings():
     #import settings from YAML file
@@ -143,7 +160,7 @@ def main():
             #elif minute change
                 # do animaiton here
             #check for stop condition /interrupt here
-            time.sleep(1)
+            time.sleep(.1)
 
     #elif static:
         #static(params)
