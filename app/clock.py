@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 
 from rpi_ws281x import PixelStrip, Color
-import sys, os, time, datetime
+import sys, os, time
+from datetime import datetime
+
+
+#Global Attributes to be used across script. Initialized to 0
+#add color constants here
 
 #class PixelRing(PixelStrip):
 #        def __init__(self, num, pin, freq_hz=800000, dma=10, invert=False,
@@ -28,14 +33,33 @@ def read_settings():
     #return session settings
     return 1
 
-def clock(params):
+def drawClock(strip, time, COLOR_0, COLOR_1, COLOR_2, COLOR_3):
+    
+    #clear display first
+    for i in range(60):
+                strip.setPixelColor(i, Color(0, 0, 0))
+
+    #update time: 
+    for j in range(time.minute+1):
+        strip.setPixelColor(j, COLOR_1)
+    for k in range(0, 60, 5):
+        strip.setPixelColor(k, COLOR_3)
+
+    strip.setPixelColor(time.second, COLOR_0)
+    
+
     # do clock things here
     
-    # get system time
-    # check for min/hour transition
-    #   update LEDS or show animation
+    #draw static hours with color_0
+
+    #draw second with color_1
+
+    #draw minutes with COLOR_2
+    
+    #draw hours with COLOR_3
+    #
     # show
-    pass
+    return 0
 
 def static(params):
     # do static infinity mirror things here
@@ -45,19 +69,22 @@ def static(params):
 
 def main():
     
+    DEBUG = False
+
     # Default LED strip configuration:
     LED_COUNT = 60        # Number of LED pixels.
     LED_PIN = 18          # GPIO pin connected to the pixels (18 uses PWM!).
     LED_FREQ_HZ = 800000  # LED signal frequency in hertz (usually 800khz)
     LED_DMA = 10          # DMA channel to use for generating signal (try 10)
-    LED_BRIGHTNESS = 255  # Set to 0 for darkest and 255 for brightest
+    LED_BRIGHTNESS = 200  # Set to 0 for darkest and 255 for brightest
     LED_INVERT = False    # True to invert the signal (when using NPN transistor level shift)
     LED_CHANNEL = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
 
-    white = Color(127, 127, 127)
-    red = Color(255, 0, 0)
-    blue = Color(0, 255, 0)
-    green = Color(0, 0, 255)
+    #replace with file i/o
+    COLOR_0 = Color(127, 127, 127) #WHITE
+    COLOR_1 = Color(255, 0, 0)      #GRN
+    COLOR_2 = Color(0, 255, 0)      #RED
+    COLOR_3 = Color(0, 0, 255)      #BLUE
 
     #params = read_settings()
 
@@ -65,22 +92,39 @@ def main():
 
     strip.begin()
 
-    colorWipe(strip, white, 50)
+    colorWipe(strip, COLOR_0, 10)
         
-    colorWipe(strip, red, 50)
+    #colorWipe(strip, red, 50)
 
-    colorWipe(strip, blue, 50)
+    #colorWipe(strip, blue, 50)
 
-    colorWipe(strip, green, 50)
+    #colorWipe(strip, green, 50)
 
-    colorWipe(strip, Color(0, 0, 0), 50)
+    colorWipe(strip, Color(0, 0, 0), 10)
 
-    if clock:
-        clock(params)
-    elif static:
-        static(params)
-    elif game:
-        wheelOfFortune()
+    if True:
+        while True:
+            #get current time here
+            now = datetime.now()
+
+            if DEBUG:
+                current_time = now.strftime("%H:%M:%S")
+                print("Time: ", current_time)    
+
+            drawClock(strip, now, COLOR_0, COLOR_1, COLOR_2, COLOR_3)
+            strip.show()
+            #drawClock(strip, time, COLOR_0, COLOR_1, COLOR_2, COLOR_3)
+            #if hour change     
+               # means do animation here
+            #elif minute change
+                # do animaiton here
+            #check for stop condition /interrupt here
+            time.sleep(1)
+
+    #elif static:
+        #static(params)
+    #elif game:
+    #    wheelOfFortune()
 
 def systemboot():
     # check if WIFI is configured and connected
