@@ -21,13 +21,14 @@ PINK =          Color(255, 20, 147)
 BLACK =         Color(0, 0, 0)
 #ALL_COLORS = []
 
-def getHourAnimation(name):
+def getHourAnimation(name):     #this might be unnecessarily overcomplicating things...
     hourAnimations = {
         "ping":         1,
         "pong":         2,
         "crisscross":   3,
         "rollback":     4,
-        "RGB":          5
+        "RGB":          5,
+        "flavortown":   6,
         }
     return hourAnimations.get(name, 3)
 
@@ -76,7 +77,7 @@ class PixelRing(PixelStrip):
 ### Pixel fill functions
 #################################################
 
-def colorWipe(strip, color, wait_ms=100, reversed=False, start=None, stop=None):
+def colorWipe(strip, color, wait_ms=10, reversed=False, start=None, stop=None):
     
     #by default, sweep full strip
     if start == None:
@@ -178,31 +179,23 @@ def animateClockStartup(strip, now, wait_ms):
 ### Clock-specific functions
 #################################################
 
-def drawClock(strip, time):
+def drawClock(strip, now):
     
     #clear display first
     strip.clear()
 
-    #update minute fill: 
-    for j in range(time.minute+1):
-        strip.setPixelColor(j, strip.color1)
+    drawMinute(strip, now, strip.color1, fill=True)
     
     drawHourTicks(strip, strip.color2)
 
-    #update current hour
-    hour = time.hour % 12
-    hour_pixel = hour * 5
+    drawHour(strip, now, strip.color3)
 
-    if hour_pixel - 1 < 0:  
-        strip.setPixelColor(hour_pixel + 59, strip.color3)
-    else:
-        strip.setPixelColor(hour_pixel - 1, strip.color3)
-
-    strip.setPixelColor(hour_pixel, strip.color3)
-    strip.setPixelColor(hour_pixel + 1, strip.color3)
+    if abs((now.hour % 12) * strip.numPixels() / 12 - now.minute) <= 1:
+        #draw minute over the 3-wide hour
+        drawMinute(strip, now, strip.color1, fill=False)
 
     #update second
-    strip.setPixelColor(time.second, strip.color0)
+    strip.setPixelColor(now.second, strip.color0)
 
     return 0
 
@@ -210,6 +203,35 @@ def drawHourTicks(strip, color):
     #update hour ticks
     for k in range(0, strip.numPixels(), int(strip.numPixels()/12)):
         strip.setPixelColor(k, color)
+
+def drawHour(strip, now, color):
+
+    #update current hour
+    hour = now.hour % 12
+    hour_pixel = hour * 5
+
+    if hour_pixel - 1 < 0:  
+        strip.setPixelColor(hour_pixel + 59, color)
+    else:
+        strip.setPixelColor(hour_pixel - 1, color)
+
+    strip.setPixelColor(hour_pixel, color)
+    strip.setPixelColor(hour_pixel + 1, color)
+
+    pass
+
+def drawMinute(strip, now, color, fill=None):
+    
+    if fill == None:
+        fill = True
+    
+    if fill == True:
+        for j in range(now.minute+1):
+            strip.setPixelColor(j, strip.color1)
+    else:
+        strip.setPixelColor(now.minute, strip.color1)
+
+    pass
 
 def hourChangeAnimation(strip, now, last, animation):
     case = getHourAnimation(animation)
@@ -238,6 +260,16 @@ def hourChangeAnimation(strip, now, last, animation):
     elif case == 5:
         #RGB
         pass
+    elif case == 6:
+        #flavortown
+        colorWipe(strip, BLACK, reversed=True)  #wipe-erase strip
+        drawHourTicks(strip, strip.color2)      
+        strip.show()                            #draw hour ticks
+        for j in range(256 * 1):
+            for i in range(strip.numPixels()):
+                drawHour(strip, now, wheel((i + j) & 255))      #draw next hour & rainbow flow those 3 LEDs
+            strip.show()
+            time.sleep(10 / 1000.0)
 
     pass
 
@@ -261,7 +293,7 @@ def minuteChangeAnimation(strip, now, last, animation):
         # pong
         # CCW from 60 to next minute, minute color
 
-        length = strip.numPixels() - now.minute
+        length = strip.numPixels() - (now.minute + 1)
 
         for i in range(length):
             drawClock(strip, last)
@@ -271,6 +303,14 @@ def minuteChangeAnimation(strip, now, last, animation):
         pass
     elif case == 3:
         #crisscross
+        length = strip.numPixels()
+
+        for i in range(length):
+            drawClock(strip, now)
+            strip.setPixelColor(i, strip.color0)
+            strip.setPixelColor(length - i, strip.color0)
+            strip.show()
+            time.sleep(1 / length)
         pass
     elif case == 4:
         #rollback
@@ -350,19 +390,21 @@ def main():
                 print("Time: ", current_time)    
             
             if last.hour < now.hour:
-                hAnimation = "ping"
+                hAnimation = "flavortown"
                 hourChangeAnimation(strip, now, last, hAnimation)     
                 pass
-            elif last.minute < now.minute:
-                mAnimaiton = "ping"
+            elif last.minute < now.minute and now.minute % 15 == 0:
+                mAnimaiton = "crisscross"
                 minuteChangeAnimation(strip, now, last, mAnimaiton)
-
+            elif last.minute < now.minute:
+                mAnimaiton = "pong"
+                minuteChangeAnimation(strip, now, last, mAnimaiton)
 
             drawClock(strip, now)
             strip.show()
 
             #check for stop condition /interrupt here
-            time.sleep(.1)
+            time.sleep(.01)
             last = now
 
         #elif static:
