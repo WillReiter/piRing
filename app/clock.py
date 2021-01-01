@@ -21,16 +21,40 @@ PINK =          Color(255, 20, 147)
 BLACK =         Color(0, 0, 0)
 #ALL_COLORS = []
 
+def getHourAnimation(name):
+    hourAnimations = {
+        "ping":         1,
+        "pong":         2,
+        "crisscross":   3,
+        "rollback":     4,
+        "RGB":          5
+        }
+    return hourAnimations.get(name, 3)
+
+def getMinuteAnimation(name):
+    hourAnimations = {
+        "ping":         1,
+        "pong":         2,
+        "crisscross":   3,
+        "RGB":          4
+        }
+    return hourAnimations.get(name, 1)
+
 #################################################
 ### PixelRing class
 #################################################
 
 class PixelRing(PixelStrip):
 
-    def __init__(self, num, pin, freq_hz=800000, dma=10, invert=False, brightness=255, channel=0, strip_type=None, gamma=None, rotation=0):
+    def __init__(self, num, pin, color0, color1, color2, color3, freq_hz=800000, dma=10, invert=False, brightness=255, channel=0, strip_type=None, gamma=None, rotation=0):
         super().__init__(num, pin, freq_hz, dma, invert, brightness, channel, strip_type, gamma)
         
         self.rotation = rotation
+
+        self.color0 = color0        #seconds
+        self.color1 = color1        #minute fill
+        self.color2 = color2        #hour ticks
+        self.color3 = color3        #current hour
     
     def clear(self):
         for i in range(self.numPixels()):
@@ -139,14 +163,14 @@ def theaterChaseRainbow(strip, wait_ms=50):
 ### Clock-specific animations
 #################################################
 
-def animateClockStartup(strip, now, wait_ms, min_Color, hourTick_Color):
+def animateClockStartup(strip, now, wait_ms):
     strip.clear()
-    colorWipe(strip, min_Color, wait_ms)
+    colorWipe(strip, strip.color1, wait_ms)
 
     for i, j in enumerate(range(now.minute, strip.numPixels())):
         strip.clear()
-        drawHourTicks(strip, hourTick_Color)
-        colorFill(strip, min_Color, start=0, stop=int(strip.numPixels())-i)
+        drawHourTicks(strip, strip.color2)
+        colorFill(strip, strip.color1, start=0, stop=int(strip.numPixels())-i)
         strip.show()
         time.sleep(wait_ms/1000.0)        
 
@@ -154,31 +178,31 @@ def animateClockStartup(strip, now, wait_ms, min_Color, hourTick_Color):
 ### Clock-specific functions
 #################################################
 
-def drawClock(strip, time, COLOR_0, COLOR_1, COLOR_2, COLOR_3):
+def drawClock(strip, time):
     
     #clear display first
     strip.clear()
 
     #update minute fill: 
     for j in range(time.minute+1):
-        strip.setPixelColor(j, COLOR_1)
+        strip.setPixelColor(j, strip.color1)
     
-    drawHourTicks(strip, COLOR_2)
+    drawHourTicks(strip, strip.color2)
 
     #update current hour
     hour = time.hour % 12
     hour_pixel = hour * 5
 
     if hour_pixel - 1 < 0:  
-        strip.setPixelColor(hour_pixel + 59, COLOR_3)
+        strip.setPixelColor(hour_pixel + 59, strip.color3)
     else:
-        strip.setPixelColor(hour_pixel - 1, COLOR_3)
+        strip.setPixelColor(hour_pixel - 1, strip.color3)
 
-    strip.setPixelColor(hour_pixel, COLOR_3)
-    strip.setPixelColor(hour_pixel + 1, COLOR_3)
+    strip.setPixelColor(hour_pixel, strip.color3)
+    strip.setPixelColor(hour_pixel + 1, strip.color3)
 
     #update second
-    strip.setPixelColor(time.second, COLOR_0)
+    strip.setPixelColor(time.second, strip.color0)
 
     return 0
 
@@ -187,16 +211,86 @@ def drawHourTicks(strip, color):
     for k in range(0, strip.numPixels(), int(strip.numPixels()/12)):
         strip.setPixelColor(k, color)
 
+def hourChangeAnimation(strip, now, last, animation):
+    case = getHourAnimation(animation)
+    if case == 1:
+        #ping
+        for i in len(strip.numPixels()):
+            drawClock(strip, now)
+            strip.setPixelColor(i, strip.color1)
+            strip.show()
+            time.sleep(.01)
+        pass
+    elif case == 2:
+        #pong
+        for i in len(strip.numPixels()):
+            drawClock(strip, last)
+            strip.setPixelColor(strip.numPixels() - i, strip.color1)
+            strip.show()
+            time.sleep(.01)
+        pass
+    elif case == 3:
+        #crisscross
+        pass
+    elif case == 4:
+        #rollback
+        pass
+    elif case == 5:
+        #RGB
+        pass
+
+    pass
+
+def minuteChangeAnimation(strip, now, last, animation):
+
+    case = getMinuteAnimation(animation)
+
+    if case == 1:
+        # ping
+        # CW from 0 to 60, second color
+
+        length = strip.numPixels() + 1
+
+        for i in range(length):
+            drawClock(strip, now)
+            strip.setPixelColor(i, strip.color0)
+            strip.show()
+            time.sleep(1 / length)
+        pass
+    elif case == 2:
+        # pong
+        # CCW from 60 to next minute, minute color
+
+        length = strip.numPixels() - now.minute
+
+        for i in range(length):
+            drawClock(strip, last)
+            strip.setPixelColor(strip.numPixels() - i, strip.color1)
+            strip.show()
+            time.sleep(1 / length)
+        pass
+    elif case == 3:
+        #crisscross
+        pass
+    elif case == 4:
+        #rollback
+        pass
+    elif case == 5:
+        #RGB
+        pass
+    pass
+
 #################################################
 ### State Machine functions
 #################################################
 
 def importSettings():
     #import settings from YAML file
-    #return session settings
+    #return session settings and write props to strip init
     return 1
 
 def init():
+    #check NTP connection, AP mode, etc
     pass
 
 def main():
@@ -212,6 +306,7 @@ def main():
         pass
     
     # Default LED strip configuration:
+    # any parameters that for sure don't need to be changed by settings can be defaulted in the constructor and removed from main()
     LED_COUNT = 60        # Number of LED pixels.
     LED_PIN = 18          # GPIO pin connected to the pixels (18 uses PWM!).
     LED_FREQ_HZ = 800000  # LED signal frequency in hertz (usually 800khz)
@@ -222,7 +317,7 @@ def main():
     ROTATION = 52
 
     #replace with file i/o
-    COLOR_0 = WHITE                 #seconds
+    COLOR_0 = RED                 #seconds
     COLOR_1 = GOLD                  #minute fill
     COLOR_2 = LIGHT_BLUE            #hour ticks
     COLOR_3 = BLUE                  #current hour
@@ -233,18 +328,19 @@ def main():
 
     try:
     
-        strip = PixelRing(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL, rotation=ROTATION)
+        strip = PixelRing(LED_COUNT, LED_PIN, COLOR_0, COLOR_1, COLOR_2, COLOR_3, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL, rotation=ROTATION)
 
         strip.begin()
 
+        #opening animation here
         rainbowCycle(strip, wait_ms=10, iterations=1)
 
         now = datetime.now()
+        last = now
 
-        #initial animation here:
-        animateClockStartup(strip, now, 10, COLOR_1, COLOR_2)
-
-        
+        #Clock startup:
+        animateClockStartup(strip, now, 10)
+    
         while True:
             #get current time here
             now = datetime.now()
@@ -253,16 +349,21 @@ def main():
                 current_time = now.strftime("%H:%M:%S")
                 print("Time: ", current_time)    
             
+            if last.hour < now.hour:
+                hAnimation = "ping"
+                hourChangeAnimation(strip, now, last, hAnimation)     
+                pass
+            elif last.minute < now.minute:
+                mAnimaiton = "ping"
+                minuteChangeAnimation(strip, now, last, mAnimaiton)
 
-            drawClock(strip, now, COLOR_0, COLOR_1, COLOR_2, COLOR_3)
+
+            drawClock(strip, now)
             strip.show()
-            #drawClock(strip, time, COLOR_0, COLOR_1, COLOR_2, COLOR_3)
-            #if hour change     
-            # means do animation here
-            #elif minute change
-                # do animaiton here
+
             #check for stop condition /interrupt here
             time.sleep(.1)
+            last = now
 
         #elif static:
             #static(params)
