@@ -8,6 +8,8 @@ from datetime import datetime
 ### Constants to be used across script.
 #################################################
 
+#   https://flaviocopes.com/rgb-color-codes/
+
 WHITE =         Color(127, 127, 127)
 RED =           Color(255, 0, 0)
 ORANGE =        Color(255, 69, 0)
@@ -15,8 +17,10 @@ GOLD =          Color(255, 215, 0)
 GREEN =         Color(0, 255, 0)
 BLUE =          Color(0, 0, 255)
 LIGHT_BLUE =    Color(0, 191, 255)
+MIDNIGHT_BLUE = Color(25, 25, 112)
 INDIGO =        Color(75, 0, 130)
 VOILET =        Color(238, 130, 238)
+DARK_MAGENTA =  Color(139, 0, 139)
 PINK =          Color(255, 20, 147)
 BLACK =         Color(0, 0, 0)
 #ALL_COLORS = []
@@ -360,7 +364,7 @@ def main():
     COLOR_0 = RED                 #seconds
     COLOR_1 = GOLD                  #minute fill
     COLOR_2 = LIGHT_BLUE            #hour ticks
-    COLOR_3 = BLUE                  #current hour
+    COLOR_3 = DARK_MAGENTA                  #current hour
 
     # check if WIFI is configured and connected
     # ping NTP to confirm that's all good
