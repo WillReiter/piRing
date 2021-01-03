@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from rpi_ws281x import PixelStrip, Color
-import sys, os, time
+import sys, os, time, signal
 from datetime import datetime
 
 #################################################
@@ -44,6 +44,14 @@ def getMinuteAnimation(name):
         "RGB":          4
         }
     return hourAnimations.get(name, 1)
+
+#################################################
+### Signal Handling
+
+def receiveSignal(signalNumber, frame):
+    print('Received:', signalNumber)
+    colorWipe(BLACK, 10, reversed=True)
+    return
 
 #################################################
 ### PixelRing class
@@ -417,7 +425,11 @@ def main():
         #    wheelOfFortune()
 
     except KeyboardInterrupt:
-        colorWipe(strip, BLACK, 10, reversed=True)            
+        colorWipe(strip, BLACK, 10, reversed=True) 
+    #except signal.SIGKILL:
+    #    colorWipe(strip, BLACK, 10, reversed=True) 
+
 
 if __name__ == "__main__":
+    signal.signal(signal.SIGTERM, receiveSignal)
     main()
