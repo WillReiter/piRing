@@ -47,11 +47,12 @@ def getMinuteAnimation(name):
 
 #################################################
 ### Signal Handling
+#################################################
 
 def receiveSignal(signalNumber, frame):
     print('Received:', signalNumber)
-    colorWipe(BLACK, 10, reversed=True)
-    return
+    raise NameError('HiThere')
+
 
 #################################################
 ### PixelRing class
@@ -426,6 +427,9 @@ def main():
 
     except KeyboardInterrupt:
         colorWipe(strip, BLACK, 10, reversed=True) 
+    except NameError:
+        print('An exception flew by!')
+        raise
     #except signal.SIGKILL:
     #    colorWipe(strip, BLACK, 10, reversed=True) 
 

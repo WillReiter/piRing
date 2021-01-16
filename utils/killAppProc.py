@@ -5,7 +5,7 @@ import sys, os, signal
 
 # pkill signal values: https://linux.die.net/Bash-Beginners-Guide/sect_12_01.html
 
-bashCommand = "sudo pkill -15 -f "
+bashCommand = "sudo pkill -2 -f "
 scriptToKill = "clock.py"
 
 if len(sys.argv) > 1:
