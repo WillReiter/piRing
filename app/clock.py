@@ -72,14 +72,14 @@ class PixelRing(PixelStrip):
     
     def clear(self):
         for i in range(self.numPixels()):
-            self._led_data[i] = Color(0,0,0)
+            self[i] = Color(0,0,0)
 
     # override the follwoing to inlcude rotation:
     def setPixelColor(self, n, color):
         """Set LED at position n to the provided 24-bit color value (in RGB order).
         """
         n = (n + self.rotation) % int(self.numPixels())
-        self._led_data[n] = color
+        self[n] = color
             
     # other methods that will need an override to include rotation, if used
     # def setPixelColorRGB(self, n, red, green, blue, white=0):
