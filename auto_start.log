@@ -1,0 +1,58 @@
+{'size': 60, 'frequency': 800000, 'brightness': 255, 'pin': 18, 'dma': 10, 'ledInvert': False, 'ledChannel': 0, 'rotation': 52, 'colorPallett': 'config/color/default.json'}
+Received: 15
+{'size': 60, 'frequency': 800000, 'brightness': 200, 'pin': 18, 'dma': 10, 'ledInvert': False, 'ledChannel': 0, 'rotation': 52, 'colorPallett': 'config/color/default.json'}
+Received: 15
+Received: 15
+Traceback (most recent call last):
+  File "/home/user/projects/piRing/app/clock.py", line 128, in main
+    time.sleep(0.01)
+    ~~~~~~~~~~^^^^^^
+  File "/home/user/projects/piRing/app/clock.py", line 80, in receiveSignal
+    raise KeyboardInterrupt
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/user/projects/piRing/app/clock.py", line 137, in <module>
+    main()
+    ~~~~^^
+  File "/home/user/projects/piRing/app/clock.py", line 132, in main
+    colorWipe(strip, colors["BLACK"], 10, reversed=True)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/projects/piRing/animations/animations.py", line 40, in colorWipe
+    strip.show()
+    ~~~~~~~~~~^^
+  File "/home/user/projects/piRing/.venv/lib/python3.13/site-packages/rpi_ws281x/rpi_ws281x.py", line 147, in show
+    resp = ws.ws2811_render(self._leds)
+  File "/home/user/projects/piRing/app/clock.py", line 80, in receiveSignal
+    raise KeyboardInterrupt
+KeyboardInterrupt
+{'size': 60, 'frequency': 800000, 'brightness': 200, 'pin': 18, 'dma': 10, 'ledInvert': False, 'ledChannel': 0, 'rotation': 52, 'colorPallett': 'config/color/default.json'}
+Received: 15
+Received: 15
+Traceback (most recent call last):
+  File "/home/user/projects/piRing/app/clock.py", line 128, in main
+    time.sleep(0.01)
+    ~~~~~~~~~~^^^^^^
+  File "/home/user/projects/piRing/app/clock.py", line 80, in receiveSignal
+    raise KeyboardInterrupt
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/user/projects/piRing/app/clock.py", line 137, in <module>
+    main()
+    ~~~~^^
+  File "/home/user/projects/piRing/app/clock.py", line 132, in main
+    colorWipe(strip, colors["BLACK"], 10, reversed=True)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/projects/piRing/animations/animations.py", line 40, in colorWipe
+    strip.show()
+    ~~~~~~~~~~^^
+  File "/home/user/projects/piRing/.venv/lib/python3.13/site-packages/rpi_ws281x/rpi_ws281x.py", line 147, in show
+    resp = ws.ws2811_render(self._leds)
+  File "/home/user/projects/piRing/app/clock.py", line 80, in receiveSignal
+    raise KeyboardInterrupt
+KeyboardInterrupt
