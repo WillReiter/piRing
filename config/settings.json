@@ -1,0 +1,11 @@
+{
+    "size": 60,
+    "frequency": 800000,
+    "brightness": 200,
+    "pin": 18,
+    "dma": 10,
+    "ledInvert": false,
+    "ledChannel": 0,
+    "rotation": 52,
+    "colorPallett": "config/color/default.json"
+}
